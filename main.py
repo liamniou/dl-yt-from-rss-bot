@@ -49,7 +49,7 @@ def download_item(message, yt_info):
         target_filename = os.path.join(
             TARGET_DIR,
             string_to_path(yt_info.channel),
-            f"{string_to_path(yt_info.title)}.mp3",
+            f"{string_to_path(yt_info.title)}.%(ext)s",
         )
         ytdl_opts = {
             "outtmpl": target_filename,
