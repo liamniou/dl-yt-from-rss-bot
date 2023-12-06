@@ -1,5 +1,6 @@
 # Populate DB with video links
 ```
+$ mkdir db
 $ docker-compose up checker
 ```
 
