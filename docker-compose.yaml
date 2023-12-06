@@ -1,0 +1,26 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      - RSS_FEED=${RSS_FEED}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TARGET_DIR=${TARGET_DIR}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - ${PWD}/db:/app/db
+      - ${TARGET_DIR}:${TARGET_DIR}
+
+  checker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.process
+    environment:
+      - RSS_FEED=${RSS_FEED}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TARGET_DIR=${TARGET_DIR}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - ${PWD}/db:/app/db
