@@ -9,6 +9,8 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TARGET_DIR=${TARGET_DIR}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - WEBHOOK_TOKEN=${WEBHOOK_TOKEN}
     volumes:
       - ${PWD}/db:/app/db
       - ${TARGET_DIR}:${TARGET_DIR}

@@ -1,5 +1,6 @@
 import dbm
 import os
+import httpx
 import telebot
 
 from dataclasses import dataclass
@@ -8,6 +9,8 @@ from yt_dlp import YoutubeDL
 
 
 TARGET_DIR = os.getenv("TARGET_DIR")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+WEBHOOK_TOKEN = os.getenv("WEBHOOK_TOKEN")
 
 
 bot = telebot.TeleBot(os.getenv("TELEGRAM_BOT_TOKEN"))
@@ -65,6 +68,14 @@ def download_item(message, yt_info):
     process_decision(message)
 
 
+def call_post_webhook_with_token():
+    headers = {
+        "Authorization": f"Bearer {WEBHOOK_TOKEN}"
+    }
+    httpx.post(WEBHOOK_URL, headers=headers)
+
+
+
 @bot.message_handler(func=lambda m: m.text is not None and m.text == "Process")
 def process_decision(m):
     nothing_to_process = True
@@ -94,6 +105,7 @@ def process_decision(m):
         bot.send_message(
             m.chat.id, "That's it for now. See you later!", reply_markup=remove_markup
         )
+        call_post_webhook_with_token()
 
 
 def main():
