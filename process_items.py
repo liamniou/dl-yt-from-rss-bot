@@ -33,8 +33,10 @@ def check_new_videos():
     new_videos = None
     with dbm.open("db/rss-bot", "c") as db:
         for i in d.entries:
-            if n_days_old(string_to_date(i.published), 1) and i.link not in db:
-                info = get_video_info_from_yt_url({}, i.link)
+            if n_days_old(string_to_date(i.published), 2) and i.link not in db:
+                info = get_video_info_from_yt_url({"ignoreerrors": True}, i.link)
+                if not info:
+                    continue
                 if info["duration"] > 60:
                     print(f"Processing {i.author}: {i.title} ({i.link})")
                     db[i.link] = "New"
