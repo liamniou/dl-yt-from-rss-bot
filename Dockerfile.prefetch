@@ -5,8 +5,8 @@ WORKDIR /home/app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
+COPY prefetch.py .
 
 RUN mkdir -p db
 
-CMD ["python", "main.py"]
+CMD ["python", "prefetch.py"]

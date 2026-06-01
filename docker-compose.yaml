@@ -2,27 +2,49 @@ services:
   bot:
     build:
       context: .
-      dockerfile: ./Dockerfile
-    restart: always
+      dockerfile: Dockerfile
+    container_name: dl-from-rss-bot
+    restart: unless-stopped
+    network_mode: host
     environment:
-      - RSS_FEED=${RSS_FEED}
+      - PYTHONUNBUFFERED=1
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TARGET_DIR=${TARGET_DIR}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-      - WEBHOOK_URL=${WEBHOOK_URL}
-      - WEBHOOK_TOKEN=${WEBHOOK_TOKEN}
+      - METUBE_URL=${METUBE_URL:-http://localhost:8085}
     volumes:
-      - ${PWD}/db:/home/lestar/db
-      - ${TARGET_DIR}:${TARGET_DIR}
+      - ./db:/home/app/db
 
   checker:
     build:
       context: .
-      dockerfile: ./Dockerfile.process
+      dockerfile: Dockerfile.checker
+    container_name: dl-from-rss-checker
+    restart: unless-stopped
+    network_mode: host
+    command: tail -f /dev/null
     environment:
-      - RSS_FEED=${RSS_FEED}
+      - RSS_FEED=${RSS_FEED:-http://192.168.0.237:1200/youtube/subscriptions}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TARGET_DIR=${TARGET_DIR}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - MAX_AGE_DAYS=${MAX_AGE_DAYS:-2}
     volumes:
-      - ${PWD}/db:/home/lestar/db
+      - ./db:/home/app/db
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.dl-rss-checker-08.schedule: "0 8 * * *"
+      ofelia.job-exec.dl-rss-checker-08.only-on-success: "false"
+      ofelia.job-exec.dl-rss-checker-08.command: "python main.py"
+      ofelia.job-exec.dl-rss-checker-16.schedule: "0 16 * * *"
+      ofelia.job-exec.dl-rss-checker-16.only-on-success: "false"
+      ofelia.job-exec.dl-rss-checker-16.command: "python main.py"
+
+  prefetch:
+    build:
+      context: .
+      dockerfile: Dockerfile.prefetch
+    container_name: dl-from-rss-prefetch
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PREFETCH_INTERVAL=${PREFETCH_INTERVAL:-3600}
+    volumes:
+      - ./db:/home/app/db

@@ -5,8 +5,9 @@ WORKDIR /home/app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
+COPY process_items.py .
 
 RUN mkdir -p db
 
-CMD ["python", "main.py"]
+CMD ["python", "process_items.py"]
+
